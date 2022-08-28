@@ -19,6 +19,7 @@
     "dns": "^0.2.2",
     "forever-agent": "^0.6.1",
     "make-fetch-happen": "^10.2.1",
+    "native-dns": "^0.7.0",
     "net": "^1.0.2",
     "next": "12.2.5",
     "node-gyp": "^9.1.0",
