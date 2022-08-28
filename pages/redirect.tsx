@@ -15,12 +15,10 @@ const Redirect: NextPage = () => {
     axios("http://localhost:3000/api/user/login", {
       method: "POST",
       data: { code }
-    })
-    .then(res => {
+    }).then(res => {
       localStorage.setItem("login", res.data.message);
       location.href = "/";
-    })
-    .catch(() => {
+    }).catch(() => {
       location.href = "/";
     });
   }, []);
