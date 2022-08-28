@@ -14,6 +14,9 @@
     "@types/react-responsive": "^8.0.5",
     "autoprefixer": "^10.4.8",
     "axios": "^0.27.2",
+    "child_process": "^1.0.2",
+    "forever-agent": "^0.6.1",
+    "net": "^1.0.2",
     "next": "12.2.5",
     "postcss": "^8.4.16",
     "react": "18.2.0",
@@ -23,7 +26,8 @@
     "socket.io-client": "^4.5.1",
     "sqlite": "^4.1.2",
     "sqlite3": "^5.0.0",
-    "tailwindcss": "^3.1.8"
+    "tailwindcss": "^3.1.8",
+    "tls": "^0.0.1"
   },
   "devDependencies": {
     "@types/node": "18.7.9",
