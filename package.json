@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@headlessui/react": "^1.6.6",
+    "@mapbox/node-pre-gyp": "^1.0.9",
     "@types/react-responsive": "^8.0.5",
     "autoprefixer": "^10.4.8",
     "axios": "^0.27.2",
