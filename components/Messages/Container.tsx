@@ -5,8 +5,7 @@ import Embed from "./Embed";
 import Badge from "./Badge";
 import Message from "./Message";
 
-import getDate from "../../utils/get-date";
-
+import getDate from "../../pages/utils/get-date";
 
 interface P {
   data: IMessage;

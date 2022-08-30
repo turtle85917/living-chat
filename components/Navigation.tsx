@@ -1,7 +1,7 @@
 import { Component } from "react";
 import { Transition } from "@headlessui/react";
 
-import getAvatar from "../utils/get-avatar";
+import getAvatar from "../pages/utils/get-avatar";
 
 interface P {
   user: DiscordUser | boolean | undefined;
