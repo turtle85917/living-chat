@@ -24,7 +24,7 @@ export default class Navigation extends Component<P, S> {
   }
 
   render() {
-    const DISCORD_LOGIN = "https://discord.com/api/oauth2/authorize?client_id=1009058082292256858&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fredirect&response_type=code&scope=identify";
+    const DISCORD_LOGIN = `https://discord.com/api/oauth2/authorize?client_id=1009058082292256858&redirect_uri=${process.env.FRONTEND}/redirect&response_type=code&scope=identify`;
 
     return (
       <>
