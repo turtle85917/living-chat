@@ -2,8 +2,8 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 import axios from "axios";
 
-import connectDb from "../../utils/connect-db";
-import getAvatar from "../../utils/get-avatar";
+import connectDb from "../../../utils/connect-db";
+import getAvatar from "../../../utils/get-avatar";
 
 import Oauth2 from "../../../models/Oauth2";
 import Users from "../../../models/Users";

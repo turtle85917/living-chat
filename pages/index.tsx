@@ -8,7 +8,7 @@ import Navigation from "../components/Navigation";
 import Messages from "../components/Messages";
 import MessageInput from "../components/MessageInput";
 
-import connectSocket from "./utils/connect-socket";
+import connectSocket from "../utils/connect-socket";
 
 const Home: NextPage = () => {
   // Set user.

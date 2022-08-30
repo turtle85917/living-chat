@@ -1,6 +1,6 @@
 import { Component } from "react";
 
-import getDate from "../../pages/utils/get-date";
+import getDate from "../../utils/get-date";
 
 import Badge from "./Badge";
 

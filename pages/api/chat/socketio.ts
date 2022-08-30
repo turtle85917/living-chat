@@ -6,8 +6,8 @@ import axios from "axios";
 import { Server as ServerIO } from "socket.io";
 import { Server as NetServer } from "http";
 
-import connectDb from "../../utils/connect-db";
-import reciveMessage from "../../utils/recive-message";
+import connectDb from "../../../utils/connect-db";
+import reciveMessage from "../../../utils/recive-message";
 
 import Users from "../../../models/Users";
 import Ousers from "../../../models/Ousers";

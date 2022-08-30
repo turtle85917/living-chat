@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import connectDb from "../../utils/connect-db";
+import connectDb from "../../../utils/connect-db";
 
 import axios from "axios";
 
