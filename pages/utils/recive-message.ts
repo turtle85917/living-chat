@@ -9,6 +9,7 @@ export default (request: IRequest): IMessage => {
     user: request.user,
     system: !request.user,
     content: getMessage(request.type, request.message),
+    dev: process.env.NODE_ENV === "development",
     timestamp: request.timestamp
   };
 }

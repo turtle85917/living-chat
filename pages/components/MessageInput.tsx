@@ -24,6 +24,12 @@ export default class MessageInput extends Component<P, {}> {
               : " 💬 메시지 내용을 입력해주세요."
             }
             disabled={typeof this.props.connect === "boolean" || this.props.connect === undefined}
+            onKeyDown={(event) => {
+              const keycode = event.code;
+              if (keycode === "Enter") {
+                this.props.sendMessage();
+              }
+            }}
             />
           <button
             className="bg-gray-600 px-3 border-l-2 text-gray-500 border-gray-400 rounded-r-md hover:text-gray-300 focus:outline-none"

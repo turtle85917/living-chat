@@ -13,7 +13,7 @@ const Redirect: NextPage = () => {
       location.href = "/";
     }
 
-    axios("http://localhost:3000/api/user/login", {
+    axios(`${process.env.BACKEND}/user/login`, {
       method: "POST",
       data: { code }
     }).then(res => {

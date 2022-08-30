@@ -6,7 +6,7 @@ import getAvatar from "../utils/get-avatar";
 interface P {
   user: DiscordUser | boolean | undefined;
   users: number;
-  ousers: DDiscordUser[];
+  ousers: SUsers[];
 }
 
 interface S {

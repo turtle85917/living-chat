@@ -5,9 +5,12 @@ import axios from "axios";
 import connectDb from "../../utils/connect-db";
 import getAvatar from "../../utils/get-avatar";
 
+import Oauth2 from "../../models/Oauth2";
+import Users from "../../models/Users";
+
 export default  async (req: NextApiRequest, res: NextApiResponse<ResponseResult>) => {
   if (req.method === "POST") {
-    const database = await connectDb();
+    await connectDb();
     const { key } = req.body;
 
     if (!key) {
@@ -15,9 +18,9 @@ export default  async (req: NextApiRequest, res: NextApiResponse<ResponseResult>
       return;
     }
 
-    const { access_token } = await database.get("SELECT access_token FROM oauth2 WHERE key = ?", [ key ]);
+    const result = await Oauth2.findOne({ key });
 
-    if (typeof access_token !== "string") {
+    if (!result) {
       res.status(400).json({ message: "로그인을 해주세요." });
       return;
     }
@@ -25,13 +28,18 @@ export default  async (req: NextApiRequest, res: NextApiResponse<ResponseResult>
     const userResponse: DiscordUser = (await axios("https://discord.com/api/users/@me", {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${access_token}`
+        Authorization: `Bearer ${result.access_token}`
       }
     })).data;
 
-    const user = await database.get("SELECT * FROM users WHERE id = ?", [ userResponse.id ]);
+    const user = await Users.findOne({ id: userResponse.id });
     if (!user) {
-      await database.run("INSERT INTO users (id, username, avatarUrl)", userResponse.id, userResponse.username, getAvatar(userResponse));
+      const nuser = new Users({
+        id: userResponse.id,
+        username: userResponse.username,
+        avatarUrl: getAvatar(userResponse)
+      });
+      await nuser.save();
     }
 
     res.status(200).json({ user: JSON.stringify(userResponse), message: "ok." });

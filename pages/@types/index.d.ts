@@ -31,12 +31,6 @@ interface DiscordUser {
 
 type APIDiscordUser = Omit<DiscordUser, "flags" | "locale" | "mfa_enabled" | "email" | "verified"> & { avatarUrl?: string; };
 
-interface DDiscordUser {
-  id: string;
-  username: string;
-  avatarUrl: string;
-}
-
 // Chat
 interface IRequest {
   type: string;
@@ -68,5 +62,27 @@ interface IMessage {
   user?: IUser;
   content?: string;
   embeds?: IEmbed[];
+  dev?: boolean;
   timestamp: number;
+}
+
+// Schema
+interface SOusers {
+  id: string;
+  user_id: string;
+}
+
+interface SUsers {
+  id: string;
+  username: string;
+  avatarUrl: string;
+}
+
+interface SOauth2 {
+  key: string;
+  access_token: string;
+}
+
+interface SMessages {
+  data: IMessage;
 }

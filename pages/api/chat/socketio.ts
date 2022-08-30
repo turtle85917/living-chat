@@ -9,6 +9,10 @@ import { Server as NetServer } from "http";
 import connectDb from "../../utils/connect-db";
 import reciveMessage from "../../utils/recive-message";
 
+import Users from "../../models/Users";
+import Ousers from "../../models/Ousers";
+import Messages from "../../models/Messages";
+
 export default async (req: NextApiRequest, res: NextApiResponseServerIO) => {
   if (!res.socket.server.io) {
     console.log("New socket.io server...");
@@ -17,8 +21,8 @@ export default async (req: NextApiRequest, res: NextApiResponseServerIO) => {
     const io = new ServerIO(httpServer);
 
     io.on("connection", async (socket) => {
-      const database = await connectDb();
-      socket.join("online-chat"); // Join "online-chat"
+      await connectDb();
+      socket.join("public-room"); // Join "public-room"
 
       socket.on("NEW_USER", async (requestData) => { // Connect new user.
         const { login } = requestData;
@@ -29,28 +33,30 @@ export default async (req: NextApiRequest, res: NextApiResponseServerIO) => {
             data: { key: login }
           })).data.user);
 
-          const res = await database.get("SELECT * FROM ousers WHERE user_id = ?", [ LoginUser.id ]);
+          const res = await Ousers.findOne({ user_id: LoginUser.id });
 
-          if (res) await database.run("UPDATE ousers SET id = ? WHERE user_id = ?", [ socket.id, LoginUser.id ]);
-          else await database.run("INSERT INTO ousers (id, user_id) VALUES (?, ?)", socket.id, LoginUser.id);
+          if (res) {
+            await Ousers.findOneAndUpdate({ user_id: LoginUser.id }, { id: socket.id });
+          } else {
+            const ouser = new Ousers({ id: socket.id, user_id: LoginUser.id });
+            await ouser.save();
+          }
 
-          const user: DDiscordUser | undefined = await database.get("SELECT * FROM users WHERE id = ?", [ LoginUser.id ]);
+          const user = await Users.findOne({ id: LoginUser.id });
           if (!user) {
             throw new Error("유저가 존재하지 않아요.");
           }
 
-          if (!res) {
-            const type = "NEW_USER";
-            await database.run("INSERT INTO messages (data) VALUES (?)",
-              JSON.stringify(reciveMessage({
-                message: user.username,
-                timestamp: Date.now(), type
-              })));
+          const type = "NEW_USER";
 
-            socket.to("online-chat").emit("RECIVE_MESSAGE", {
-              list: (await database.all("SELECT * FROM messages")).map(message => JSON.parse(message.data) as IMessage)
-            });
-          }
+          const message = new Messages({
+            data: reciveMessage({ message: user.username, timestamp: Date.now(), type })
+          });
+          await message.save();
+
+          socket.to("public-room").emit("RECIVE_MESSAGE", {
+            list: (await Messages.find()).map(m => m.data)
+          });
         } catch (e) {
           console.log(e);
         }
@@ -60,29 +66,30 @@ export default async (req: NextApiRequest, res: NextApiResponseServerIO) => {
         const { login, content } = requestData;
 
         try {
+          socket.to("public-room").emit("NEW_USER", { login });
+
           if (!content) {
             throw new Error("메시지 내용 없어요.");
           }
-          const LoginUser: DiscordUser = JSON.parse((await axios(`http://localhost:3000/api/user`, {
+          const LoginUser: DiscordUser = JSON.parse((await axios(`${process.env.BACKEND}/user`, {
             method: "POST",
             data: { key: login }
           })).data.user);
 
-          const user: DDiscordUser| undefined = await database.get("SELECT * FROM users WHERE id = ?", [ LoginUser.id ]);
+          const user = await Users.findOne({ id: LoginUser.id });
           if (!user) {
             throw new Error("유저가 존재하지 않아요.");
           }
 
           const type = "MESSAGE";
-          await database.run("INSERT INTO messages (data) VALUES (?)",
-            JSON.stringify(reciveMessage({
-              message: content,
-              user: { username: user.username, avatar_url: user.avatarUrl },
-              timestamp: Date.now(), type
-            })));
 
-          socket.to("online-chat").emit("RECIVE_MESSAGE", {
-            list: (await database.all("SELECT * FROM messages")).map(message => JSON.parse(message.data) as IMessage)
+          const message = new Messages({
+            data: reciveMessage({ message: content, user: { username: user.username, avatar_url: user.avatarUrl }, timestamp: Date.now(), type })
+          });
+          await message.save();
+
+          socket.to("public-room").emit("RECIVE_MESSAGE", {
+            list: (await Messages.find()).map(m => m.data)
           });
         } catch (e) {
           console.log(e);
@@ -90,37 +97,39 @@ export default async (req: NextApiRequest, res: NextApiResponseServerIO) => {
       });
 
       socket.on("ONLINE_USER", async () => { // Check online users.
-        const ousers = await database.all("SELECT * FROM ousers");
-        const result: DDiscordUser[] = [];
+        const ousers = await Ousers.find();
+        const users = await Users.find();
+
+        const result = [];
         for (const ouser of ousers) {
-          result.push((await database.get("SELECT * FROM users WHERE id = ?", [ ouser.user_id ]))!);
+          result.push(users.find(u => u.id === ouser.user_id));
         }
         
-        socket.to("online-chat").emit("RESULT", {
+        socket.to("public-room").emit("RESULT", {
           count: ousers.length,
           list: result
         });
       });
 
       socket.on("disconnect", async () => { // Disconnect event.
-        const ouser = await database.get("SELECT * FROM ousers WHERE id = ?", [ socket.id ]);
+        const ouser = await Ousers.findOne({ id: socket.id });
         if (!ouser) return;
 
-        const res = await database.get("SELECT * FROM ousers WHERE user_id = ?", [ ouser.user_id ]);
+        const res = await Ousers.findOne({ user_id: ouser.user_id });
         const user: APIDiscordUser = JSON.parse((await axios(`${process.env.BACKEND}/user/${ouser.user_id}`)).data.user);
 
-        await database.run("DELETE FROM ousers WHERE id = ?", socket.id);
+        await Ousers.deleteOne({ id: socket.id });
 
         if (res) {
           const type = "DISCONNECT";
-          await database.run("INSERT INTO messages (data) VALUES (?)",
-            JSON.stringify(reciveMessage({
-              message: user.username,
-              timestamp: Date.now(), type
-            })));
 
-          socket.to("online-chat").emit("RECIVE_MESSAGE", {
-            list: (await database.all("SELECT * FROM messages")).map(message => JSON.parse(message.data) as IMessage)
+          const message = new Messages({
+            data: reciveMessage({ message: user.username, timestamp: Date.now(), type })
+          });
+          await message.save();
+
+          socket.to("public-room").emit("RECIVE_MESSAGE", {
+            list: (await Messages.find()).map(m => m.data)
           });
         }
       });

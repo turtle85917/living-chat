@@ -3,8 +3,10 @@ import connectDb from "../../utils/connect-db";
 
 import axios from "axios";
 
+import Oauth2 from "../../models/Oauth2";
+
 export default async (req: NextApiRequest, res: NextApiResponse<ResponseResult>) => {
-  const database = await connectDb();
+  await connectDb();
 
   if (req.method === "POST") {
     const { code } = req.body;
@@ -28,9 +30,19 @@ export default async (req: NextApiRequest, res: NextApiResponse<ResponseResult>)
       })
     })).data;
 
-    const key = Math.random().toString(36).slice(2, 15);
+    let key = Math.random().toString(36).slice(2, 15);
 
-    await database.run("INSERT INTO oauth2 (key, access_token) VALUES (?, ?)", key, tokenResponseData.access_token);
+    const accessToken = await Oauth2.findOne({ access_token: tokenResponseData.access_token });
+
+    if (!accessToken) {
+      const oauth2 = new Oauth2({
+        key,
+        access_token: tokenResponseData.access_token
+      });
+      await oauth2.save();
+    } else {
+      key = accessToken.key;
+    }
 
     res.status(200).json({ message: key });
     return;

@@ -11,33 +11,19 @@ import MessageInput from "./components/MessageInput";
 import connectDb from "./utils/connect-db";
 import connectSocket from "./utils/connect-socket";
 
-export async function getServerSideProps() {
-  const database = await connectDb();
-
-  return {
-    props: {
-      messages: (await database.all("SELECT * FROM messages")).map(message => JSON.parse(message.data) as IMessage)
-    }
-  }
-}
-
-interface P {
-  messages: IMessage[];
-}
-
-const Home: NextPage<P> = (props) => {
+const Home: NextPage = () => {
   // Set user.
   const [loading, setLoading] = useState<boolean>(true);
   const [user, setUser] = useState<DiscordUser | undefined>(undefined);
 
   // Set messages.
-  const [messages, setMessages] = useState<IMessage[]>(props.messages);
+  const [messages, setMessages] = useState<IMessage[]>([]);
 
   // Set connect.
   const [connect, setConnect] = useState<boolean>(false);
   
   const [users, setUsers] = useState<number>(0);
-  const [ousers, setOusers] = useState<DDiscordUser[]>([]);
+  const [ousers, setOusers] = useState<SUsers[]>([]);
 
   useEffect(() => {
     const socketInitializer = async () => {
@@ -89,6 +75,7 @@ const Home: NextPage<P> = (props) => {
       setLoading(false);
     }).catch(() => {
       localStorage.removeItem("login");
+      setLoading(false);
     });
   }, []);
 
