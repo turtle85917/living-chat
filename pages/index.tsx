@@ -4,11 +4,10 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import axios from "axios";
 
-import Navigation from "./components/Navigation";
-import Messages from "./components/Messages";
-import MessageInput from "./components/MessageInput";
+import Navigation from "../components/Navigation";
+import Messages from "../components/Messages";
+import MessageInput from "../components/MessageInput";
 
-import connectDb from "./utils/connect-db";
 import connectSocket from "./utils/connect-socket";
 
 const Home: NextPage = () => {

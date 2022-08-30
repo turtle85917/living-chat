@@ -3,7 +3,7 @@ import connectDb from "../../utils/connect-db";
 
 import axios from "axios";
 
-import Oauth2 from "../../models/Oauth2";
+import Oauth2 from "../../../models/Oauth2";
 
 export default async (req: NextApiRequest, res: NextApiResponse<ResponseResult>) => {
   await connectDb();

@@ -9,9 +9,9 @@ import { Server as NetServer } from "http";
 import connectDb from "../../utils/connect-db";
 import reciveMessage from "../../utils/recive-message";
 
-import Users from "../../models/Users";
-import Ousers from "../../models/Ousers";
-import Messages from "../../models/Messages";
+import Users from "../../../models/Users";
+import Ousers from "../../../models/Ousers";
+import Messages from "../../../models/Messages";
 
 export default async (req: NextApiRequest, res: NextApiResponseServerIO) => {
   if (!res.socket.server.io) {

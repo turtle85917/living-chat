@@ -5,8 +5,8 @@ import axios from "axios";
 import connectDb from "../../utils/connect-db";
 import getAvatar from "../../utils/get-avatar";
 
-import Oauth2 from "../../models/Oauth2";
-import Users from "../../models/Users";
+import Oauth2 from "../../../models/Oauth2";
+import Users from "../../../models/Users";
 
 export default  async (req: NextApiRequest, res: NextApiResponse<ResponseResult>) => {
   if (req.method === "POST") {
