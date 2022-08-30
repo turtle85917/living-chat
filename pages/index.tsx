@@ -40,7 +40,7 @@ const Home: NextPage = () => {
       // Init
       socket.emit("NEW_USER", { login });
 
-      socket.on("RECIVE_MESSAGE", async (response) => {
+      socket.on("RECEIVE_MESSAGE", async (response) => {
         setMessages(response.list);
 
         socket.emit("ONLINE_USER", {});
@@ -104,7 +104,7 @@ const Home: NextPage = () => {
           // Send message.
           const socket = await connectSocket();
           socket.emit("SEND_MESSAGE", { login, content: value });
-          socket.on("RECIVE_MESSAGE", async (response) => {
+          socket.on("RECEIVE_MESSAGE", async (response) => {
             setMessages(response.list);
           });
         }}/>

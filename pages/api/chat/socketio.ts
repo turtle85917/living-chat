@@ -7,7 +7,7 @@ import { Server as ServerIO } from "socket.io";
 import { Server as NetServer } from "http";
 
 import connectDb from "../../../utils/connect-db";
-import reciveMessage from "../../../utils/recive-message";
+import reciveMessage from "../../../utils/receive-message";
 
 import Users from "../../../models/Users";
 import Ousers from "../../../models/Ousers";
@@ -54,7 +54,7 @@ export default async (req: NextApiRequest, res: NextApiResponseServerIO) => {
           });
           await message.save();
 
-          socket.to("public-room").emit("RECIVE_MESSAGE", {
+          socket.to("public-room").emit("RECEIVE_MESSAGE", {
             list: (await Messages.find()).map(m => m.data)
           });
         } catch (e) {
@@ -88,7 +88,7 @@ export default async (req: NextApiRequest, res: NextApiResponseServerIO) => {
           });
           await message.save();
 
-          socket.to("public-room").emit("RECIVE_MESSAGE", {
+          socket.to("public-room").emit("RECEIVE_MESSAGE", {
             list: (await Messages.find()).map(m => m.data)
           });
         } catch (e) {
@@ -128,7 +128,7 @@ export default async (req: NextApiRequest, res: NextApiResponseServerIO) => {
           });
           await message.save();
 
-          socket.to("public-room").emit("RECIVE_MESSAGE", {
+          socket.to("public-room").emit("RECEIVE_MESSAGE", {
             list: (await Messages.find()).map(m => m.data)
           });
         }
